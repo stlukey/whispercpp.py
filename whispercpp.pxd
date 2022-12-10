@@ -1,7 +1,5 @@
 #!python
 # cython: language_level=3
-# distutils: libraries=['whisper']
-
 
 from libc.stdint cimport (
     int64_t
