@@ -1,9 +1,7 @@
 #!python
 # cython: language_level=3
 
-from libc.stdint cimport (
-    int64_t
-)
+from libc.stdint cimport int64_t
 
 cdef:
     int WHISPER_SAMPLE_RATE = 16000
