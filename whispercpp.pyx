@@ -5,27 +5,55 @@
 
 import ffmpeg
 import numpy as np
+import requests
+import os
+
 cimport numpy as cnp
 
 cdef int SAMPLE_RATE = 16000
 cdef char* TEST_FILE = b'test.wav'
-cdef char* DEFAULT_MODEL = b'ggml-tiny.bin'
+cdef char* DEFAULT_MODEL = b'model_ggml_tiny.bin'
 cdef char* LANGUAGE = b'fr'
 
+MODELS = {
+    b'model_ggml_tiny.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-tiny.bin',
+    b'model_ggml_base.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-base.bin',
+    b'model_ggml_small.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-small.bin',
+    b'model_ggml_medium.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-medium.bin',
+    b'model_ggml_large.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-large.bin',
+}
+
+def model_exists(model):
+    return os.path.exists(model)
+
+def download_model(model):
+    if model_exists(model):
+        return
+
+    print('Downloading model...')
+    url = MODELS[model]
+    r = requests.get(url, allow_redirects=True)
+    with open(model, 'wb') as f:
+        f.write(r.content)
+
+
 cdef audio_data load_audio(bytes file, int sr = SAMPLE_RATE):
-    out = (
-        ffmpeg.input(file, threads=0)
-        .output(
-            "-", format="s16le",
-            acodec="pcm_s16le",
-            ac=1, ar=sr
-        )
-        .run(
-            cmd=["ffmpeg", "-nostdin"],
-            capture_stdout=True,
-            capture_stderr=True
-        )
-    )[0]
+    try:
+        out = (
+            ffmpeg.input(file, threads=0)
+            .output(
+                "-", format="s16le",
+                acodec="pcm_s16le",
+                ac=1, ar=sr
+            )
+            .run(
+                cmd=["ffmpeg", "-nostdin"],
+                capture_stdout=True,
+                capture_stderr=True
+            )
+        )[0]
+    except:
+        raise RuntimeError('File not found')
 
     cdef cnp.ndarray[cnp.float32_t, ndim=1, mode="c"] frames = (
         np.frombuffer(out, np.int16)
@@ -55,22 +83,23 @@ cdef class Whisper:
     cdef whisper_full_params params
 
     def __init__(self, char* model=DEFAULT_MODEL):
+        download_model(model)
         self.ctx = whisper_init(model)
         self.params = default_params()
 
     def __dealloc__(self):
         whisper_free(self.ctx)
 
-    cpdef str transcribe(self):
+    def transcribe(self):
         cdef audio_data data = load_audio(TEST_FILE) 
-        cdef int res = whisper_full(self.ctx, self.params, data.frames, data.n_frames)
+        return whisper_full(self.ctx, self.params, data.frames, data.n_frames)
+    
+    cpdef str extract_text(self, int res):
         if res != 0:
             raise RuntimeError
         cdef int n_segments = whisper_full_n_segments(self.ctx)
         return b'\n'.join([
             whisper_full_get_segment_text(self.ctx, i) for i in range(n_segments)
         ]).decode()
-
-
 
 

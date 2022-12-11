@@ -1,17 +1,14 @@
 from distutils.core import setup
 from Cython.Build import cythonize
-import numpy
-import os
-import sys
+import numpy, os, sys
 
 if sys.platform == 'darwin':
-    os.environ['CFLAGS'] = '-DGGML_USE_ACCELERATE'
-    os.environ['CXXFLAGS'] = '-DGGML_USE_ACCELERATE'
-    os.environ['LDFLAGS'] = '-framework Accelerate'
+    os.environ['CFLAGS']   = '-DGGML_USE_ACCELERATE -O3'
+    os.environ['CXXFLAGS'] = '-DGGML_USE_ACCELERATE -O3'
+    os.environ['LDFLAGS']  = '-framework Accelerate'
 else:
-    os.environ['CFLAGS'] = '-mavx -mavx2 -mfma -mf16c'
-    os.environ['CXXFLAGS'] = '-mavx -mavx2 -mfma -mf16c'
-
+    os.environ['CFLAGS']   = '-mavx -mavx2 -mfma -mf16c -O3'
+    os.environ['CXXFLAGS'] = '-mavx -mavx2 -mfma -mf16c -O3'
 
 setup(
     name='whispercpp',
