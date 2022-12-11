@@ -16,11 +16,11 @@ cdef char* DEFAULT_MODEL = b'tiny'
 cdef char* LANGUAGE = b'fr'
 
 MODELS = {
-    b'model_ggml_tiny.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-tiny.bin',
-    b'model_ggml_base.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-base.bin',
-    b'model_ggml_small.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-small.bin',
-    b'model_ggml_medium.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-medium.bin',
-    b'model_ggml_large.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-large.bin',
+    'model_ggml_tiny.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-tiny.bin',
+    'model_ggml_base.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-base.bin',
+    'model_ggml_small.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-small.bin',
+    'model_ggml_medium.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-medium.bin',
+    'model_ggml_large.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-large.bin',
 }
 
 def model_exists(model):
@@ -83,9 +83,9 @@ cdef class Whisper:
     cdef whisper_full_params params
 
     def __init__(self, char* model=DEFAULT_MODEL, pb=None):
-        model = b'model_ggml_' + model + b'.bin'
-        download_model(model)
-        self.ctx = whisper_init(model)
+        model_fullname = f'model_ggml_{model.decode()}.bin'
+        download_model(model_fullname)
+        self.ctx = whisper_init(model_fullname)
         self.params = default_params()
 
     def __dealloc__(self):
