@@ -82,7 +82,7 @@ cdef class Whisper:
     cdef whisper_context * ctx
     cdef whisper_full_params params
 
-    def __init__(self, char* model=DEFAULT_MODEL, pb=None):
+    def __init__(self, model=DEFAULT_MODEL, pb=None):
         model_fullname = f'model_ggml_{model.decode()}.bin'.encode('utf8')
         download_model(model_fullname)
         self.ctx = whisper_init(model_fullname)
