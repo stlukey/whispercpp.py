@@ -12,7 +12,7 @@ cimport numpy as cnp
 
 cdef int SAMPLE_RATE = 16000
 cdef char* TEST_FILE = b'test.wav'
-cdef char* DEFAULT_MODEL = b'model_ggml_tiny.bin'
+cdef char* DEFAULT_MODEL = b'tiny'
 cdef char* LANGUAGE = b'fr'
 
 MODELS = {
@@ -30,7 +30,7 @@ def download_model(model):
     if model_exists(model):
         return
 
-    print('Downloading model...')
+    print(f'Downloading {model}...')
     url = MODELS[model]
     r = requests.get(url, allow_redirects=True)
     with open(model, 'wb') as f:
@@ -53,7 +53,7 @@ cdef audio_data load_audio(bytes file, int sr = SAMPLE_RATE):
             )
         )[0]
     except:
-        raise RuntimeError('File not found')
+        raise RuntimeError(f"File '{file}' not found")
 
     cdef cnp.ndarray[cnp.float32_t, ndim=1, mode="c"] frames = (
         np.frombuffer(out, np.int16)
@@ -82,7 +82,8 @@ cdef class Whisper:
     cdef whisper_context * ctx
     cdef whisper_full_params params
 
-    def __init__(self, char* model=DEFAULT_MODEL):
+    def __init__(self, char* model=DEFAULT_MODEL, pb=None):
+        model = b'model_ggml_' + model + b'.bin'
         download_model(model)
         self.ctx = whisper_init(model)
         self.params = default_params()

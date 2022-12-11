@@ -10,10 +10,11 @@ else:
     os.environ['CFLAGS']   = '-mavx -mavx2 -mfma -mf16c -O3'
     os.environ['CXXFLAGS'] = '-mavx -mavx2 -mfma -mf16c -O3'
 
+
 setup(
     name='whispercpp',
     version='1.0',
-    description='Python Bindings for whisper.cpp',
+    description='Python bindings for whisper.cpp',
     author='Luke Southam',
     author_email='luke@devthe.com',
     ext_modules = cythonize("whispercpp.pyx"),
