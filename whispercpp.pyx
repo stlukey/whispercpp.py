@@ -16,11 +16,11 @@ cdef char* DEFAULT_MODEL = b'tiny'
 cdef char* LANGUAGE = b'fr'
 
 MODELS = {
-    b'model_ggml_tiny.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-tiny.bin',
-    b'model_ggml_base.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-base.bin',
-    b'model_ggml_small.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-small.bin',
-    b'model_ggml_medium.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-medium.bin',
-    b'model_ggml_large.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-large.bin',
+    'model_ggml_tiny.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-tiny.bin',
+    'model_ggml_base.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-base.bin',
+    'model_ggml_small.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-small.bin',
+    'model_ggml_medium.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-medium.bin',
+    'model_ggml_large.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-large.bin',
 }
 
 def model_exists(model):
@@ -31,7 +31,7 @@ def download_model(model):
         return
 
     print(f'Downloading {model}...')
-    url = MODELS[model]
+    url = MODELS[model.decode()]
     r = requests.get(url, allow_redirects=True)
     with open(model, 'wb') as f:
         f.write(r.content)
