@@ -1,9 +1,8 @@
 #!python
 # cython: language_level=3
-
 from libc.stdint cimport int64_t
 
-cdef:
+cdef nogil:
     int WHISPER_SAMPLE_RATE = 16000
     int WHISPER_N_FFT = 400
     int WHISPER_N_MEL = 80
@@ -13,6 +12,9 @@ cdef:
     char* TEST_FILE = b'test.wav'
     char* DEFAULT_MODEL = b'ggml-tiny.bin'
     char* LANGUAGE = b'fr'
+    ctypedef struct audio_data:
+        float* frames;
+        int n_frames;
 
 cdef extern from "whisper.h" nogil:
     enum whisper_sampling_strategy:
@@ -108,9 +110,4 @@ cdef extern from "whisper.h" nogil:
     cdef float whisper_full_get_token_p(whisper_context*, int, int)
     const char* whisper_print_system_info()
     const char* whisper_full_get_segment_text(whisper_context*, int)
-
-
-ctypedef struct audio_data:
-    float* frames;
-    int n_frames;
 
