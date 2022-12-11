@@ -22,5 +22,6 @@ setup(
     install_requires=[
       'numpy',
       'ffmpeg-python',
+      'requests'
     ],
 )
