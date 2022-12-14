@@ -3,12 +3,12 @@ from Cython.Build import cythonize
 import numpy, os, sys
 
 if sys.platform == 'darwin':
-    os.environ['CFLAGS']   = '-DGGML_USE_ACCELERATE -O3'
-    os.environ['CXXFLAGS'] = '-DGGML_USE_ACCELERATE -O3'
-    os.environ['LDFLAGS']  = '-framework Accelerate'
+    os.environ['CFLAGS']   = '-DGGML_USE_ACCELERATE -O3 -I./whisper.cpp/'
+    os.environ['CXXFLAGS'] = '-DGGML_USE_ACCELERATE -O3 -I./whisper.cpp/'
+    os.environ['LDFLAGS']  = '-framework Accelerate -I./whisper.cpp/'
 else:
-    os.environ['CFLAGS']   = '-mavx -mavx2 -mfma -mf16c -O3'
-    os.environ['CXXFLAGS'] = '-mavx -mavx2 -mfma -mf16c -O3'
+    os.environ['CFLAGS']   = '-mavx -mavx2 -mfma -mf16c -O3 -I./whisper.cpp/'
+    os.environ['CXXFLAGS'] = '-mavx -mavx2 -mfma -mf16c -O3 -I./whisper.cpp/'
 
 
 setup(
