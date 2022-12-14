@@ -10,10 +10,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Checkout submodules
-        uses: textbook/git-checkout-submodule-action@master
-        with:
-          remote: true
-
+        run: |
+          git submodule update --init --recursive
+  
       - uses: actions/setup-python@v2
         with:
           python-version: '3.10'
