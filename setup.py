@@ -19,7 +19,6 @@ setup(
     author_email='luke@devthe.com',
     ext_modules = cythonize("whispercpp.pyx"),
     include_dirs = ['./whisper.cpp/', numpy.get_include()],
-    extra_compile_args = ['/std:c++20'],
     install_requires=[
       'numpy',
       'ffmpeg-python',
