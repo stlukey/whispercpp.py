@@ -103,7 +103,8 @@ cdef class Whisper:
         cdef audio_data data = load_audio(<bytes>filename)
         return whisper_full(self.ctx, self.params, data.frames, data.n_frames)
     
-    cpdef list extract_text(self, int res):
+    def extract_text(self, int res):
+        print("Extracting text...")
         if res != 0:
             raise RuntimeError
         cdef int n_segments = whisper_full_n_segments(self.ctx)
