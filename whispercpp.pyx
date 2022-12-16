@@ -91,7 +91,7 @@ cdef class Whisper:
     def __init__(self, model=DEFAULT_MODEL, pb=None):
         model_fullname = f'model_ggml_{model}.bin'.encode('utf8')
         download_model(model_fullname)
-        cdef bytes model_b = MODELS_DIR / model_fullname
+        cdef bytes model_b = MODELS_DIR.encode('utf8')  + b'/' + model_fullname
         self.ctx = whisper_init(model_b)
         self.params = default_params()
         whisper_print_system_info()
