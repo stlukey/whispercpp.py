@@ -38,7 +38,7 @@ def download_model(model):
     print(f'Downloading {model}...')
     url = MODELS[model.decode()]
     r = requests.get(url, allow_redirects=True)
-    with open(MODELS_DIR + "/" + model, 'wb') as f:
+    with open(MODELS_DIR + "/" + model.decode(), 'wb') as f:
         f.write(r.content)
 
 
