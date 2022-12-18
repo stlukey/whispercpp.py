@@ -100,7 +100,9 @@ cdef class Whisper:
         whisper_free(self.ctx)
 
     def transcribe(self, filename=TEST_FILE):
+        print("Loading data..")
         cdef audio_data data = load_audio(<bytes>filename)
+        print("Transcribing..")
         return whisper_full(self.ctx, self.params, data.frames, data.n_frames)
     
     def extract_text(self, int res):
