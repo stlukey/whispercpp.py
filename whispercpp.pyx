@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 
 MODELS_DIR = str(Path('~/ggml-models').expanduser())
+print("Saving models to:", MODELS_DIR)
 
 
 cimport numpy as cnp
