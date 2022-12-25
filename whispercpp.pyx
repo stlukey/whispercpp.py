@@ -30,7 +30,7 @@ MODELS = {
 }
 
 def model_exists(model):
-    return os.path.exists(MODELS_DIR + "/" + model)
+    return os.path.exists(MODELS_DIR + "/" + model.decode())
 
 def download_model(model):
     if model_exists(model):
