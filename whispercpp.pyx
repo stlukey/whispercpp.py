@@ -22,11 +22,11 @@ cdef char* LANGUAGE = b'fr'
 cdef int N_THREADS = os.cpu_count()
 
 MODELS = {
-    'model_ggml_tiny.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-tiny.bin',
-    'model_ggml_base.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-base.bin',
-    'model_ggml_small.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-small.bin',
-    'model_ggml_medium.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-medium.bin',
-    'model_ggml_large.bin': 'https://ggml.ggerganov.com/ggml-model-whisper-large.bin',
+    'ggml-tiny.bin': 'https://huggingface.co/datasets/ggerganov/whisper.cpp/resolve/main/ggml-tiny.bin',
+    'ggml-base.bin': 'https://huggingface.co/datasets/ggerganov/whisper.cpp/resolve/main/ggml-base.bin',
+    'ggml-small.bin': 'https://huggingface.co/datasets/ggerganov/whisper.cpp/resolve/main/ggml-small.bin',
+    'ggml-medium.bin': 'https://huggingface.co/datasets/ggerganov/whisper.cpp/resolve/main/ggml-medium.bin',
+    'ggml-large.bin': 'https://huggingface.co/datasets/ggerganov/whisper.cpp/resolve/main/ggml-large.bin',
 }
 
 def model_exists(model):
