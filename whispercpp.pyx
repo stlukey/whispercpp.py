@@ -7,7 +7,7 @@ import requests
 import os
 from pathlib import Path
 
-MODELS_DIR = str(Path('~/ggml-models').expanduser())
+MODELS_DIR = str(Path('~/.ggml-models').expanduser())
 print("Saving models to:", MODELS_DIR)
 
 
@@ -37,6 +37,7 @@ def download_model(model):
     print(f'Downloading {model}...')
     url = MODELS[model.decode()]
     r = requests.get(url, allow_redirects=True)
+    os.makedirs(MODELS_DIR, exist_ok=True)
     with open(MODELS_DIR + "/" + model.decode(), 'wb') as f:
         f.write(r.content)
 
@@ -78,7 +79,6 @@ cdef whisper_full_params default_params() nogil:
     params.print_realtime = True
     params.print_progress = True
     params.translate = False
-    params.language = <const char *> LANGUAGE
     n_threads = N_THREADS
     return params
 
