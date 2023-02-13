@@ -1,7 +1,5 @@
 #!python
 # cython: language_level=3
-# distutils: language = c++
-# distutils: sources= ./whisper.cpp/whisper.cpp ./whisper.cpp/ggml.c
 
 import ffmpeg
 import numpy as np
@@ -9,7 +7,7 @@ import requests
 import os
 from pathlib import Path
 
-MODELS_DIR = str(Path('~/ggml-models').expanduser())
+MODELS_DIR = str(Path('~/.ggml-models').expanduser())
 print("Saving models to:", MODELS_DIR)
 
 
@@ -39,6 +37,7 @@ def download_model(model):
     print(f'Downloading {model}...')
     url = MODELS[model]
     r = requests.get(url, allow_redirects=True)
+    os.makedirs(MODELS_DIR, exist_ok=True)
     with open(Path(MODELS_DIR).joinpath(model), 'wb') as f:
         f.write(r.content)
 
