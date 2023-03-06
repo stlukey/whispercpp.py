@@ -62,7 +62,7 @@ cdef cnp.ndarray[cnp.float32_t, ndim=1, mode="c"] load_audio(bytes file, int sr 
                 capture_stderr=True
             )
         )[0]
-    except:
+    except FileNotFoundError:
         raise RuntimeError(f"File '{file}' not found")
 
     cdef cnp.ndarray[cnp.float32_t, ndim=1, mode="c"] frames = (
