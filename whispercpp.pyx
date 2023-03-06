@@ -12,11 +12,12 @@ print("Saving models to:", MODELS_DIR)
 
 
 cimport numpy as cnp
+from cpython.mem cimport PyMem_Malloc, PyMem_Free
 
 cdef int SAMPLE_RATE = 16000
 cdef char* TEST_FILE = 'test.wav'
 cdef char* DEFAULT_MODEL = 'tiny'
-cdef char* LANGUAGE = b'en'
+cdef char* LANGUAGE = NULL
 cdef int N_THREADS = os.cpu_count()
 
 MODELS = {
@@ -101,12 +102,17 @@ cdef class Whisper:
     def __dealloc__(self):
         whisper_free(self.ctx)
 
-    def transcribe(self, filename=TEST_FILE):
-        print("Loading data..")
+    def transcribe(self, filename=TEST_FILE, language=None):
+        print("Transcribing...")
         cdef cnp.ndarray[cnp.float32_t, ndim=1, mode="c"] frames = load_audio(<bytes>filename)
-
-        print("Transcribing..")
-        return whisper_full(self.ctx, self.params, &frames[0], len(frames))
+        if language:
+            print("Language:", language)
+            LANGUAGE = language.encode('utf-8')
+            self.params.language = LANGUAGE
+        else:
+            self.params.language = NULL
+        transcript = whisper_full(self.ctx, self.params, &frames[0], len(frames))
+        return transcript
     
     def extract_text(self, int res):
         print("Extracting text...")
