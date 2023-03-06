@@ -16,7 +16,7 @@ cimport numpy as cnp
 cdef int SAMPLE_RATE = 16000
 cdef char* TEST_FILE = 'test.wav'
 cdef char* DEFAULT_MODEL = 'tiny'
-cdef char* LANGUAGE = b'fr'
+cdef char* LANGUAGE = b'en'
 cdef int N_THREADS = os.cpu_count()
 
 MODELS = {
@@ -33,8 +33,8 @@ def model_exists(model):
 def download_model(model):
     if model_exists(model):
         return
-
     print(f'Downloading {model}...')
+
     url = MODELS[model]
     r = requests.get(url, allow_redirects=True)
     os.makedirs(MODELS_DIR, exist_ok=True)
@@ -85,11 +85,11 @@ cdef class Whisper:
     cdef whisper_full_params params
 
     def __init__(self, model=DEFAULT_MODEL, pb=None):
-        model_fullname = f'ggml-{model}.bin'.encode('utf8')
+        model_fullname = f'ggml-{model}.bin' #.encode('utf8')
         download_model(model_fullname)
         model_path = Path(MODELS_DIR).joinpath(model_fullname)
         cdef bytes model_b = str(model_path).encode('utf8')
-        self.ctx = whisper_init(model_b)
+        self.ctx = whisper_init_from_file(model_b)
         self.params = default_params()
         whisper_print_system_info()
 
