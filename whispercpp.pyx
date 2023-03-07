@@ -1,8 +1,6 @@
 #!python
 # cython: language_level=3
 
-
-
 import ffmpeg
 import numpy as np
 import requests
@@ -107,7 +105,10 @@ cdef class Whisper:
             'ggml-base.en', 'ggml-small', 'ggml-small.en', 'ggml-medium', 'ggml-medium.en', 'ggml-large',
             'ggml-large-v1']. Defaults to 'ggml-base'.
     **kwargs: optional
-        Additional arguments to override the default parameters for speech recognition.
+        Additional arguments to override the default parameters for speech recognition. Accepts the following arguments:
+            - strategy (str): Sampling strategy to use. Choose from 'GREEDY' or 'BEAM_SEARCH'. Default: 'GREEDY'.
+            - print_progress (bool): Whether to print progress messages during transcription. Default: True.
+            - print_realtime (bool): Whether to print transcription results in real time. Default: True.
 
     Attributes:
     -----------
