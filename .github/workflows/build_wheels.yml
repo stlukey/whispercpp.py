@@ -33,9 +33,14 @@ jobs:
                fi
         shell: bash
 
-      - name: Change Xcode version to support clang99
-        if: matrix.os == 'macOS-latest'
-        run: sudo xcode-select -s /Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer
+    - name: Install dependencies
+      if: runner.os == 'macOS'
+      env:
+        HOMEBREW_NO_AUTO_UPDATE: 1
+      run: |
+        brew update
+        brew install gcc
+        export CC=gcc-11 CXX=g++-11
 
       - name: Build wheel
         run: python -m cibuildwheel --output-dir dist/
