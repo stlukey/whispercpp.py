@@ -34,7 +34,7 @@ jobs:
       - name: macOS clang
         run: |
           if [ "$RUNNER_OS" == "macOS" ]; then
-            sudo xcode-select -s /Applications/Xcode_12.5.app/Contents/Developer
+            sudo xcode-select -s /Applications/Xcode_12.4.app/Contents/Developer
             clang -v
           fi
 
