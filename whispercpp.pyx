@@ -1,6 +1,8 @@
 #!python
 # cython: language_level=3
 
+
+
 import ffmpeg
 import numpy as np
 import requests
@@ -36,6 +38,13 @@ MODELS = {
 def model_exists(model):
     return os.path.exists(Path(MODELS_DIR).joinpath(model))
 
+def sampling_strategy_from_string(strategy_string):
+    strategy_map = {
+        'GREEDY': whisper_sampling_strategy.WHISPER_SAMPLING_BEAM_SEARCH,
+        'BEAM_SEARCH': whisper_sampling_strategy.WHISPER_SAMPLING_BEAM_SEARCH
+    }
+    return strategy_map[strategy_string.upper()]
+
 def download_model(model):
     if model_exists(model):
         return
@@ -49,6 +58,7 @@ def download_model(model):
 
 
 cdef cnp.ndarray[cnp.float32_t, ndim=1, mode="c"] load_audio(bytes file, int sr = SAMPLE_RATE):
+    print("Sampling rate:", sr)
     try:
         out = (
             ffmpeg.input(file, threads=0)
@@ -74,9 +84,10 @@ cdef cnp.ndarray[cnp.float32_t, ndim=1, mode="c"] load_audio(bytes file, int sr 
 
     return frames
 
-cdef whisper_full_params default_params() nogil:
+cdef whisper_full_params default_params(strategy='GREEDY'):
+    strategy_value = sampling_strategy_from_string(strategy)
     cdef whisper_full_params params = whisper_full_default_params(
-        whisper_sampling_strategy.WHISPER_SAMPLING_GREEDY
+        strategy_value
     )
     params.print_realtime = True
     params.print_progress = True
@@ -87,24 +98,46 @@ cdef whisper_full_params default_params() nogil:
 
 
 cdef class Whisper:
+    """
+    This class provides an interface for speech recognition using the Whisper library.
+
+    Parameters:
+    -----------
+    model (str): Model to use for transcription. One of ['ggml-tiny', 'ggml-tiny.en', 'ggml-base',
+            'ggml-base.en', 'ggml-small', 'ggml-small.en', 'ggml-medium', 'ggml-medium.en', 'ggml-large',
+            'ggml-large-v1']. Defaults to 'ggml-base'.
+    **kwargs: optional
+        Additional arguments to override the default parameters for speech recognition.
+
+    Attributes:
+    -----------
+    ctx: whisper_context *
+        The pointer to the Whisper context used for speech recognition.
+    params: whisper_full_params
+        The parameters used for speech recognition.
+    """
     cdef whisper_context * ctx
     cdef whisper_full_params params
 
-    def __init__(self, model=DEFAULT_MODEL, pb=None):
+    def __init__(self, model='tiny', **kwargs):
         model_fullname = f'ggml-{model}.bin'
         download_model(model_fullname)
         model_path = Path(MODELS_DIR).joinpath(model_fullname)
         cdef bytes model_b = str(model_path).encode('utf8')
         self.ctx = whisper_init_from_file(model_b)
-        self.params = default_params()
+        self.params = default_params(kwargs.get('strategy', 'GREEDY'))
         whisper_print_system_info()
+        # Override default params
+        self.params.print_progress = kwargs.get('print_progress', True)
+        self.params.print_realtime = kwargs.get('print_realtime', True)
+
 
     def __dealloc__(self):
         whisper_free(self.ctx)
 
     def transcribe(self, filename=TEST_FILE, language=None):
         print("Transcribing...")
-        cdef cnp.ndarray[cnp.float32_t, ndim=1, mode="c"] frames = load_audio(<bytes>filename)
+        cdef cnp.ndarray[cnp.float32_t, ndim=1, mode="c"] frames = load_audio(<bytes>filename, SAMPLE_RATE)
         if language:
             print("Language:", language)
             LANGUAGE = language.encode('utf-8')
