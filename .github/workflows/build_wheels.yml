@@ -31,10 +31,11 @@ jobs:
                fi
         shell: bash
 
-      - name: Macos clang
+      - name: macOS clang
         run: |
           if [ "$RUNNER_OS" == "macOS" ]; then
             sudo xcode-select -s /Applications/Xcode_12.5.app/Contents/Developer
+            clang -v
           fi
 
       - name: Build wheel
