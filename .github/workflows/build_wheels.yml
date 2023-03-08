@@ -10,7 +10,6 @@ jobs:
         python-version: ["3.10"]
         xcode: [13.2]
         compiler:
-          - llvm
           - gcc
         include:
           - os: "windows-2022"
