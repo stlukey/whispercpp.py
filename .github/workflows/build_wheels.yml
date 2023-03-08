@@ -5,7 +5,7 @@ jobs:
   build_wheels:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-2022]
+        os: [ubuntu-latest, windows-latest]
         # os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.10"]
         #xcode: [13.2]
@@ -33,11 +33,13 @@ jobs:
                fi
         shell: bash
 
-      - name: Install dependencies
+      - name: Install MSBuild
         if: runner.os == 'windows'
+        uses: microsoft/setup-msbuild@v1.0.2
+
+      - name: Set up C++ environment
         run: |
-          Invoke-WebRequest -Uri https://aka.ms/vs/16/release/vs_buildtools.exe -OutFile vs_buildtools.exe
-          ./vs_buildtools.exe --quiet --wait --norestart --nocache --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.VC.v141.x86.x64 --add Microsoft.VisualStudio.Component.VC.140 --includeRecommended
+              "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
 
       - name: Build wheel
         run: python -m cibuildwheel --output-dir dist/
