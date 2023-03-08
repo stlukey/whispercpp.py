@@ -38,6 +38,7 @@ jobs:
         uses: microsoft/setup-msbuild@v1.0.2
 
       - name: Set up C++ environment
+        if: runner.os == 'windows'
         run: |
               "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
 
