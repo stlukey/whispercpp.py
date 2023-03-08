@@ -40,7 +40,7 @@ jobs:
       - name: Set up C++ environment
         if: runner.os == 'windows'
         run: |
-              "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+              "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" x86
 
       - name: Build wheel
         run: python -m cibuildwheel --output-dir dist/
