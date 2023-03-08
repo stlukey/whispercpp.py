@@ -5,10 +5,16 @@ jobs:
   build_wheels:
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-2022]
         # os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.10"]
         xcode: [13.2]
+        compiler:
+          - llvm
+          - gcc
+        include:
+          - os: "windows-2022"
+            compiler: "msvc"
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
@@ -32,16 +38,6 @@ jobs:
                     sudo apt-get install gcc g++
                fi
         shell: bash
-
-      - name: Install dependencies
-        if: runner.os == 'macOS'
-        env:
-          HOMEBREW_NO_AUTO_UPDATE: 1
-          CC: gcc-11
-          CXX: g++-11
-        run: |
-          brew update
-          brew install gcc
 
       - name: Build wheel
         run: python -m cibuildwheel --output-dir dist/
