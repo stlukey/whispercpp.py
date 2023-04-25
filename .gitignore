@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+# Prroject specific
+/local
+whispercpp.cpp
+
 # Distribution / packaging
 .Python
 build/
