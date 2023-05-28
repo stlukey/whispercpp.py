@@ -71,7 +71,8 @@ cdef extern from "whisper.h" nogil:
         whisper_encoder_begin_callback encoder_begin_callback
         void* encoder_begin_callback_user_data
     whisper_full_params whisper_full_default_params(whisper_sampling_strategy)
-    cdef whisper_context* whisper_init(char*)
+    cdef whisper_context* whisper_init_from_file(char*)
+    cdef whisper_context* whisper_init_from_buffer(voidptr, int)
     cdef void whisper_free(whisper_context*)
     cdef int whisper_pcm_to_mel(whisper_context*, float*, int, int)
     cdef int whisper_set_mel(whisper_context*, float*, int, int)

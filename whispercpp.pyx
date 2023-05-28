@@ -16,7 +16,7 @@ cimport numpy as cnp
 cdef int SAMPLE_RATE = 16000
 cdef char* TEST_FILE = 'test.wav'
 cdef char* DEFAULT_MODEL = 'tiny'
-cdef char* LANGUAGE = b'fr'
+cdef char* LANGUAGE = b'en'
 cdef int N_THREADS = os.cpu_count()
 
 MODELS = {
@@ -84,21 +84,37 @@ cdef class Whisper:
     cdef whisper_context * ctx
     cdef whisper_full_params params
 
-    def __init__(self, model=DEFAULT_MODEL, pb=None):
-        model_fullname = f'ggml-{model}.bin'.encode('utf8')
+    def __init__(self, model=DEFAULT_MODEL, pb=None, buf=None):
+        
+        model_fullname = f'ggml-{model}.bin'
         download_model(model_fullname)
         model_path = Path(MODELS_DIR).joinpath(model_fullname)
         cdef bytes model_b = str(model_path).encode('utf8')
-        self.ctx = whisper_init(model_b)
+        
+        if buf is not None:
+            self.ctx = whisper_init_from_buffer(buf, buf.size)
+        else:
+            self.ctx = whisper_init_from_file(model_b)
+        
         self.params = default_params()
         whisper_print_system_info()
+
 
     def __dealloc__(self):
         whisper_free(self.ctx)
 
     def transcribe(self, filename=TEST_FILE):
         print("Loading data..")
-        cdef cnp.ndarray[cnp.float32_t, ndim=1, mode="c"] frames = load_audio(<bytes>filename)
+        if (type(filename) == np.ndarray) :
+            temp = filename
+        
+        elif (type(filename) == str) :
+            temp = load_audio(<bytes>filename)
+        else :
+            temp = load_audio(<bytes>TEST_FILE)
+
+        
+        cdef cnp.ndarray[cnp.float32_t, ndim=1, mode="c"] frames = temp
 
         print("Transcribing..")
         return whisper_full(self.ctx, self.params, &frames[0], len(frames))
