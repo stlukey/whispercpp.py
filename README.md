@@ -11,7 +11,7 @@ from whispercpp import Whisper
 
 w = Whisper('tiny')
 
-result = w.transcribe("myfile.mp3")
+result = w.transcribe("myfile.mp3", lang="en")
 text = w.extract_text(result)
 ```
 

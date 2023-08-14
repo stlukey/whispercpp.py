@@ -16,7 +16,6 @@ cimport numpy as cnp
 cdef int SAMPLE_RATE = 16000
 cdef char* TEST_FILE = 'test.wav'
 cdef char* DEFAULT_MODEL = 'tiny'
-cdef char* LANGUAGE = b'en'
 cdef int N_THREADS = os.cpu_count()
 
 MODELS = {
@@ -68,14 +67,14 @@ cdef cnp.ndarray[cnp.float32_t, ndim=1, mode="c"] load_audio(bytes file, int sr 
 
     return frames
 
-cdef whisper_full_params default_params() nogil:
+cdef whisper_full_params default_params(char* language) nogil:
     cdef whisper_full_params params = whisper_full_default_params(
         whisper_sampling_strategy.WHISPER_SAMPLING_GREEDY
     )
     params.print_realtime = True
     params.print_progress = True
     params.translate = False
-    params.language = <const char *> LANGUAGE
+    params.language = <const char *>language
     n_threads = N_THREADS
     return params
 
@@ -96,14 +95,13 @@ cdef class Whisper:
         else:
             self.ctx = whisper_init_from_file(model_b)
         
-        self.params = default_params()
         whisper_print_system_info()
 
 
     def __dealloc__(self):
         whisper_free(self.ctx)
 
-    def transcribe(self, filename=TEST_FILE):
+    def transcribe(self, filename=TEST_FILE, lang="auto"):
         print("Loading data..")
         if (type(filename) == np.ndarray) :
             temp = filename
@@ -115,9 +113,14 @@ cdef class Whisper:
 
         
         cdef cnp.ndarray[cnp.float32_t, ndim=1, mode="c"] frames = temp
+        language_bytes = str(lang).encode("utf-8")
+        cdef char* c_string = language_bytes  # Convert bytes to char*
+
+        params = default_params(c_string)
 
         print("Transcribing..")
-        return whisper_full(self.ctx, self.params, &frames[0], len(frames))
+
+        return whisper_full(self.ctx, params, &frames[0], len(frames))
     
     def extract_text(self, int res):
         print("Extracting text...")
