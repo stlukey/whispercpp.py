@@ -113,7 +113,8 @@ cdef class Whisper:
 
         
         cdef cnp.ndarray[cnp.float32_t, ndim=1, mode="c"] frames = temp
-        cdef char* c_string = lang  # Convert bytes to char*
+        language_bytes = str(lang).encode("utf-8")
+        cdef char* c_string = language_bytes  # Convert bytes to char*
 
         params = default_params(c_string)
 
